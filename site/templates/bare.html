@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+   
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>[[[page:title()]]]</title>
+  <script src='/nitrogen/jquery.js' type='text/javascript' charset='utf-8'></script>
+  <script src='/nitrogen/jquery-ui.js' type='text/javascript' charset='utf-8'></script>
+<!--     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script> -->
+<!--     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.0/jquery-ui.min.js"></script> -->
+  <script src='/nitrogen/livevalidation.js' type='text/javascript' charset='utf-8'></script>
+  <script src='/nitrogen/nitrogen.js' type='text/javascript' charset='utf-8'></script>
+  <script src='/nitrogen/bert.js' type='text/javascript' charset='utf-8'></script>
+  <link rel="stylesheet" href="/nitrogen/jquery-ui/jquery.ui.all.css" type="text/css" media="screen" charset="utf-8" />
+<!--     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/smoothness/jquery-ui.css" type="text/css" media="screen" charset="utf-8" /> -->
+  <link rel="stylesheet" href="/nitrogen/nitrogen.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+<script>
+  // This is called with the results from from FB.getLoginStatus().
+  function statusChangeCallback(response) {
+    console.log('statusChangeCallback');
+    console.log(response);
+    // The respo
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+
+  // Here we run a very simple test of the Graph API after login is
+  // successful.  See statusChangeCallback() for when this call is made.
+  function testAPI() {
+    console.log('Welcome!  Fetching your information.... ');
+    FB.api('/me', function(response) {
+      console.log('Successful login for: ' + response.name);
+      document.getElementById('status').innerHTML =
+        'Thanks for logging in, ' + response.name + '!';
+    });
+  }
+</script>
+
+[[[page:body()]]]
+<script>
+[[[script]]]
+</script>
+<fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+</fb:login-button>
+
+<div id="status">
+</div>
+</body>
+</html>
