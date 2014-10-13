@@ -13,8 +13,11 @@ title() -> "My RecipeBox".
 
 body() ->
     #container_12 { body=[
-        #grid_8 { alpha=true, prefix=2, suffix=2, omega=true, body=inner_body() }
-    ]}.
+                          #panel{
+                             body=recipe_list() },
+                          #grid_6 {
+                             alpha=true, prefix=2, suffix=2, omega=true, body=inner_body() }
+                         ]}.
 
 inner_body() -> 
     [
@@ -51,26 +54,31 @@ inner_body() ->
                   ]}
     ].
 
--spec(get_recipe() -> {ok, #recipe{}}).
-get_recipe() ->	
-    [Name, Ingredients, Directions] = wf:mq([name,ingredients, directions]),
-    {ok,#recipe{name        = Name,
-                ingredients = Ingredients,
-                directions  = Directions}}.
 
--spec(save_recipe(#recipe{}) -> ok).
-save_recipe(Recipe) when is_record(Recipe, recipe)->
-    {atomic, _} = mnesia:transaction(fun() ->
-                                             mnesia:write(Recipe)
-                                     end),
-    ok.
+recipe_list() ->
+    Recipes = mrb_util:list_recipes_by_user(<<"test">>),
+    io:format("Recipes ~p~n", [Recipes]),
+    HTML    = [mrb_util:format_recipe(R) || R <- Recipes],
+    io:format("HTML ~p~n",[HTML]),
+    HTML.
 
-event(EVT) ->
+get_recipe() ->
+    Owner = "test",
+    Name  = wf:q(name), 
+    Ingre = wf:q(ingredients),
+    Direc = wf:q(directions),
+    {ok, Res} = mrb_util:make_recipe(Owner, Name, Ingre, Direc),
+    {ok, Res}.
+
+event(submit) ->
+
     {ok,Recipe} = get_recipe(),
-    io:format("Recipe ~p~n",[Recipe]),
-    ok          = save_recipe(Recipe),
+    ok          = mrb_util:add_recipe(Recipe),
 
     wf:replace(button, #panel { 
-                          body=EVT, 
+                          body=submit, 
                           actions=#effect { effect=highlight }
-                         }).
+                         });
+event(Evt) ->
+    io:format("Evt ~p~n",[Evt]),
+    ok.
