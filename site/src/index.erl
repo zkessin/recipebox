@@ -1,10 +1,7 @@
 %% -*- mode: nitrogen -*-
 -module (index).
 -compile(export_all).
--record(recipe, {name        :: string(),
-                 ingredients :: string(),
-                 directions  :: string()}).
-
+-include("records.hrl").
 -include_lib("nitrogen_core/include/wf.hrl").
 
 main() -> #template { file="./site/templates/bare.html" }.
@@ -13,10 +10,16 @@ title() -> "My RecipeBox".
 
 body() ->
     #container_12 { body=[
-                          #panel{
-                             body=recipe_list() },
+                          #table{
+                             id     = recipe_table,
+                             rows   = recipe_list()
+                            },
                           #grid_6 {
-                             alpha=true, prefix=2, suffix=2, omega=true, body=inner_body() }
+                             alpha  = true, 
+                             prefix = 2, 
+                             suffix = 2, 
+                             omega  = true, 
+                             body   = inner_body() }
                          ]}.
 
 inner_body() -> 
@@ -28,7 +31,7 @@ inner_body() ->
         enctype = "application/json",
         body    = [
                    #textbox { 
-                      id       = name,
+                      id       = recipe_name,
                       text     = "Recipe Name", 
                       next     = ingredients
                      },
@@ -57,16 +60,15 @@ inner_body() ->
 
 recipe_list() ->
     Recipes = mrb_util:list_recipes_by_user(<<"test">>),
-    io:format("Recipes ~p~n", [Recipes]),
     HTML    = [mrb_util:format_recipe(R) || R <- Recipes],
-    io:format("HTML ~p~n",[HTML]),
-    HTML.
+    Header  = mrb_util:recipe_header(),
+    [Header|HTML].
 
 get_recipe() ->
-    Owner = "test",
-    Name  = wf:q(name), 
-    Ingre = wf:q(ingredients),
-    Direc = wf:q(directions),
+    Owner     = {owner_id, <<"test">>},
+    Name      = ?GET(recipe_name), 
+    Ingre     = ?GET(ingredients),
+    Direc     = ?GET(directions),
     {ok, Res} = mrb_util:make_recipe(Owner, Name, Ingre, Direc),
     {ok, Res}.
 
@@ -75,10 +77,11 @@ event(submit) ->
     {ok,Recipe} = get_recipe(),
     ok          = mrb_util:add_recipe(Recipe),
 
-    wf:replace(button, #panel { 
-                          body=submit, 
-                          actions=#effect { effect=highlight }
-                         });
+    wf:replace(button,
+               #panel { 
+                  body    = submit, 
+                  actions = #effect { effect=highlight }
+                 });
 event(Evt) ->
     io:format("Evt ~p~n",[Evt]),
     ok.
