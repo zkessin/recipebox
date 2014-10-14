@@ -50,6 +50,7 @@ add_recipe(Recipes) when is_list(Recipes)->
     {atomic,_} = mnesia:transaction(F),
     ok.
 
+-spec(delete_recipe(recipe_id()) -> ok).
 delete_recipe({recipe_id, _} = RecipeID) ->
     ok = mnesia:dirty_delete(recipe, RecipeID),
     ok.
@@ -78,11 +79,16 @@ format_recipe(#recipe{id          = {recipe_id,   ID},
                  ]}.
 
 -spec(get_recipe_by_id(recipe_id()) ->
-             {ok,#recipe{}}| not_found).
+             maybe(#recipe{})).
 get_recipe_by_id(ID) ->
-    [Recipe|_] = mnesia:dirty_match_object(recipe,#recipe{id=ID, _='_'}),
-    {ok, Recipe}.
+    case mnesia:dirty_match_object(recipe,#recipe{id=ID, _='_'}) of
+        [Recipe] ->
+            {ok, Recipe};
+        [] ->
+            not_found
+    end.
 
+-spec(list_recipes_by_user(owner_id()) ->[#recipe{}]).
 list_recipes_by_user(UserId) ->
     mnesia:dirty_match_object(recipe, #recipe{owner= UserId, _='_'}).
 

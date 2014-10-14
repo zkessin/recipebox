@@ -79,7 +79,7 @@ event(submit) ->
 
     wf:replace(button,
                #panel { 
-                  body    = submit, 
+%                  body    = submit, 
                   actions = #effect { effect=highlight }
                  });
 event(Evt) ->
