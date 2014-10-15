@@ -9,8 +9,8 @@
 
 prop_save_and_retrieve_user() ->
     ?FORALL(User = #user{user_id = ID},
-            user_rec(),
-            ?IMPLIES(ID /= undefined,
+            user_rec(), 
+            ?IMPLIES(is_defined(ID),
                      begin
                          mnesia:clear_table(user),
                          mrb_facebook:save_user(User),
@@ -21,21 +21,28 @@ prop_save_and_retrieve_user() ->
 
 prop_get_user_first_name() ->
     ?FORALL(User = #user{first_name = FirstName},
-            user_rec(),
-            ?IMPLIES(FirstName /= undefined,
+            user_rec(), 
+            ?IMPLIES(is_defined(FirstName),
                      begin
                          Name = mrb_facebook:get_user_firstname(User),
                          {first_name,Name} =:= FirstName
                      end)).
                          
-
+is_defined('_') ->
+    false; 
+is_defined(undefined) ->
+    false;
+is_defined(_) ->
+    true.
 %--------------------------------------------------------------------------------
 run_spec_test_() ->
     Funs = [{ mrb_facebook,format_user,1}],
     [
-     ?_assert(proper:check_spec(Fun, [{to_file, user}]))|| Fun <-Funs
-    ].
+     ?_assert(proper:check_spec(Fun, []))|| Fun <-Funs
+    ]. 
 
+
+ 
 run_props_test_() ->
     {setup,
      fun() ->
@@ -45,10 +52,8 @@ run_props_test_() ->
      begin
          Props = [prop_save_and_retrieve_user(), prop_get_user_first_name()],
          [begin
-              
-              ?_assert(proper:quickcheck(Prop, [{to_file, user}]))
+              ?_assert(proper:quickcheck(Prop, []))
           end|| Prop <-Props
          ]
      end}.
- 
 

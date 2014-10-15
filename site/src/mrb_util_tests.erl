@@ -5,7 +5,7 @@
 
 
 owner() ->
-    {owner_id, oneof([<<"aaaaaaaaa">>,
+    {user_id, oneof([<<"aaaaaaaaa">>,
                      <<"bbbbbbbbb">>,
                      <<"ccccccccc">>])}.
 
@@ -31,19 +31,20 @@ prop_save_and_retrieve() ->
                 R =:= RECIPE
             end).
 
+
 prop_get_and_list() ->
-    UserId = {owner_id,<<"test owner">>},
+    UserId = {user_id,<<"test owner">>},
     ?FORALL(RECIPES,
             list(generate_recipe(UserId)),
             begin
                 {atomic, ok} = mnesia:clear_table(recipe),
                 mrb_util:add_recipe(RECIPES),
                 Rs = mrb_util:list_recipes_by_user(UserId),
-                ?assert(is_list(Rs)),
                 ?assertEqual(length(Rs), length(RECIPES)),
                 ?assertEqual(lists:sort(Rs),lists:sort( RECIPES)),
                 true
             end).
+
               
 run_props_test_() ->
     {setup,
@@ -54,9 +55,8 @@ run_props_test_() ->
      begin
          Props = [prop_get_and_list(), prop_save_and_retrieve()],
          [begin
-              mnesia:clear_table(recipe),
-              
-              ?_assert(proper:quickcheck(Prop, [{to_file, user}]))
+              mnesia:clear_table(recipe),              
+              ?_assert(proper:quickcheck(Prop))
           end|| Prop <-Props
           
          ]

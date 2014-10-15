@@ -9,7 +9,9 @@ main() -> #template { file="./site/templates/bare.html" }.
 title() -> "My RecipeBox".
 
 body() ->
+    mrb_facebook:facebook_postback(),
     #container_12 { body=[
+
                           #table{
                              id     = recipe_table,
                              rows   = recipe_list()
@@ -59,13 +61,13 @@ inner_body() ->
 
 
 recipe_list() ->
-    Recipes = mrb_util:list_recipes_by_user(<<"test">>),
+    Recipes = mrb_util:list_recipes_by_user({user_id,<<"test">>}),
     HTML    = [mrb_util:format_recipe(R) || R <- Recipes],
     Header  = mrb_util:recipe_header(),
     [Header|HTML].
 
 get_recipe() ->
-    Owner     = {owner_id, <<"test">>},
+    Owner     = {user_id, <<"test">>},
     Name      = ?GET(recipe_name), 
     Ingre     = ?GET(ingredients),
     Direc     = ?GET(directions),

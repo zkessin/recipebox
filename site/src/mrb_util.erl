@@ -14,7 +14,7 @@ make_uurecipe_id() ->
     StrV4 = uuid:uuid_to_string(V4),
     {recipe_id, list_to_binary(StrV4)}.
 
--spec(make_recipe(owner_id(), recipe_name(), ingredients(), directions()) ->
+-spec(make_recipe(user_id(), recipe_name(), ingredients(), directions()) ->
              {ok, #recipe{}}).
 make_recipe(Owner, Name, Ingredients, Directions) ->
     {ok, #recipe{ 
@@ -66,7 +66,7 @@ recipe_header() ->
 
 -spec(format_recipe(#recipe{}) -> nitrogen_element()).
 format_recipe(#recipe{id          = {recipe_id,   ID},
-                      owner       = {owner_id,    _Owner},
+                      owner       = {user_id,    _Owner},
                       name        = {recipe_name, Name},
                       ingredients = {ingredients, Ingre},
                       directions  = {directions,  Direc}}) ->
@@ -88,7 +88,7 @@ get_recipe_by_id(ID) ->
             not_found
     end.
 
--spec(list_recipes_by_user(owner_id()) ->[#recipe{}]).
+-spec(list_recipes_by_user(user_id()) ->[#recipe{}]).
 list_recipes_by_user(UserId) ->
     mnesia:dirty_match_object(recipe, #recipe{owner= UserId, _='_'}).
 

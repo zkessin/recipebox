@@ -23,8 +23,8 @@ save_user(User) when is_record(User, user)->
     {atomic, ok} = mnesia:transaction(Trans),
     ok.
     
--spec(lookup_user_by_id(owner_id()) -> maybe(user_rec())).
-lookup_user_by_id({owner_id,_} = UserID) ->
+-spec(lookup_user_by_id(user_id()) -> maybe(user_rec())).
+lookup_user_by_id({user_id,_} = UserID) ->
     
     case mnesia:dirty_match_object(user,#user{user_id=UserID, _='_'}) of
         [User] ->
@@ -41,3 +41,20 @@ get_user_firstname(#user{first_name = Name}) ->
 -spec(format_user(user_rec()) -> nitrogen_element()).
 format_user(User) when is_record(User, user) ->
     #panel{}.
+
+facebook_postback() ->
+    wf:wire(#api { 
+               name     = setup_facebook,
+               delegate = facebook
+              }). 
+
+-spec(json_to_record(jsx:json_term()) -> error(user_rec())).
+json_to_record(Data) ->
+    JSON = ?GET_JSON(Data),
+    User = #user{
+              user_id      = JSON(user_id),
+              email        = JSON(email),
+              full_name    = JSON(full_name),
+              first_name   = JSON(first_name),
+              access_token = JSON(access_token)},
+    {ok, User}.
