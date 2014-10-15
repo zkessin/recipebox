@@ -1,0 +1,8 @@
+*.beam
+ebin/*
+*~
+erts-*
+log/* 
+lib/* 
+.deps_plt
+site/ebin/*
