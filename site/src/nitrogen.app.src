@@ -3,7 +3,7 @@
   {description, "My RecipeBox"},
   {vsn, "1"},
   {registered, []},
-  {applications, [kernel, stdlib]},
+  {applications, [kernel, stdlib, mnesia]},
   {mod, { nitrogen_app, []}},
   {env, []}
  ]}.

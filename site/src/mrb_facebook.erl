@@ -33,7 +33,20 @@ lookup_user_by_id({user_id,_} = UserID) ->
         [] ->
             not_found
     end.
- 
+-spec(save_session_user_id(user_rec()) ->ok).
+save_session_user_id(#user{user_id = ID}) ->
+    wf:session(facebook_user_id, ID),
+    ok.
+
+-spec(get_session_user_id() -> maybe(user_id())).
+get_session_user_id() ->
+    case wf:session_default(facebook_user_id, not_found) of
+        UserId = {user_id, _} ->
+            {ok, UserId};
+        not_found ->
+            not_found
+    end.
+
 -spec(get_user_firstname(user_rec()) -> binary()).
 get_user_firstname(#user{first_name = Name}) ->
     {first_name, FName} = Name,

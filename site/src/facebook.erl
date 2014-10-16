@@ -5,10 +5,9 @@
 -include_lib("nitrogen_core/include/wf.hrl").
 
 api_event(_Name, _Tag, [Evt]) ->
-
     Data         = jsx:decode(list_to_binary(Evt)),
     {ok,UserRec} = mrb_facebook:json_to_record(Data),
     ok           = mrb_facebook:save_user(UserRec),
-    io:format("UserRec ~p~n", [UserRec]),
+    ok           = mrb_facebook:save_session_user_id(UserRec),
     ok.
         

@@ -61,22 +61,31 @@ inner_body() ->
 
 
 recipe_list() ->
-    Recipes = mrb_util:list_recipes_by_user({user_id,<<"test">>}),
-    HTML    = [mrb_util:format_recipe(R) || R <- Recipes],
-    Header  = mrb_util:recipe_header(),
-    [Header|HTML].
+    case  mrb_facebook:get_session_user_id() of
+        {ok, Owner} ->
+            Header  = mrb_util:recipe_header(),
+            Recipes = mrb_util:list_recipes_by_user(Owner),
+            HTML    = [mrb_util:format_recipe(R) || R <- Recipes],
+            [Header|HTML];
+        not_found ->
+            []
+    end.
 
-get_recipe() ->
-    Owner     = {user_id, <<"test">>},
-    Name      = ?GET(recipe_name), 
-    Ingre     = ?GET(ingredients),
-    Direc     = ?GET(directions),
-    {ok, Res} = mrb_util:make_recipe(Owner, Name, Ingre, Direc),
+
+get_recipe_from_post() ->
+
+   { ok,Owner} = mrb_facebook:get_session_user_id(),
+  
+    Name       = ?GET(recipe_name), 
+    Ingre      = ?GET(ingredients),
+    Direc      = ?GET(directions),
+    {ok, Res}  = mrb_util:make_recipe(Owner, Name, Ingre, Direc),
     {ok, Res}.
+
 
 event(submit) ->
 
-    {ok,Recipe} = get_recipe(),
+    {ok,Recipe} = get_recipe_from_post(),
     ok          = mrb_util:add_recipe(Recipe),
 
     wf:replace(button,
