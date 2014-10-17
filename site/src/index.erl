@@ -87,7 +87,7 @@ recipe_list(Owner) ->
     Header  = mrb_util:recipe_header(),
     Recipes = mrb_util:list_recipes_by_user(Owner),
     HTML    = [mrb_util:format_recipe(R) || R <- Recipes],
-    [Header|HTML].
+    #table{id=recipe_list, rows=[Header|HTML]}.
 
 
 get_recipe_from_post(Owner) ->
@@ -103,7 +103,7 @@ event(submit) ->
     {ok,UserId} = mrb_facebook:get_session_user_id(),
     {ok,Recipe} = get_recipe_from_post(UserId),
     ok          = mrb_util:add_recipe(Recipe),
-    wf:replace(recipe_table,
+    wf:replace(recipe_list,
                #panel { 
                   body    =  recipe_list(UserId), 
                   actions = #effect { effect=highlight }
