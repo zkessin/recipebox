@@ -40,6 +40,7 @@ add_recipe(Recipe = #recipe{}) ->
     F = fun() ->
                 mnesia:write(Recipe)
         end,
+    lager:info("Write ~p to mnesia", [Recipe]),
     {atomic,ok} = mnesia:transaction(F),
     ok;
 
@@ -68,8 +69,8 @@ recipe_header() ->
 format_recipe(#recipe{id          = {recipe_id,   _ID},
                       owner       = {user_id,     _Owner},
                       name        = {recipe_name, Name},
-                      ingredients = {ingredients, Ingre},
-                      directions  = {directions,  Direc}}) ->
+                      ingredients = {ingredients, _Ingre},
+                      directions  = {directions,  _Direc}}) ->
 %    RecipeURL = ["recipe/",ID  
 
     Event = #event{ target=recipe_form, type=click },
@@ -96,6 +97,7 @@ get_recipe_by_id(ID) ->
 
 -spec(list_recipes_by_user(user_id()) ->[#recipe{}]).
 list_recipes_by_user(UserId) ->
+%    lager:info("Get recipes for ~p", [UserId]),
     mnesia:dirty_match_object(recipe, #recipe{owner= UserId, _='_'}).
 
  

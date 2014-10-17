@@ -20,7 +20,7 @@ save_user(User) when is_record(User, user)->
     Trans = fun() ->
                     mnesia:write(User)
             end,
-    io:format("save_user(~p)~n", [User]),
+    lager:info("save_user(~p)~n", [User]),
     {atomic, ok} = mnesia:transaction(Trans),
     ok.
     
