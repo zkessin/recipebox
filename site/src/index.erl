@@ -14,8 +14,8 @@ title() -> "My RecipeBox".
 body() ->
     mrb_facebook:facebook_postback(),
     SessionId =  mrb_facebook:get_session_user_id(),
-
-    make_body(SessionId).
+    #panel{ id   = body,
+            body = make_body(SessionId)}.
 
 make_body({ok, UserID}) ->
     lager:info("Session ID ~p~n", [UserID]),
@@ -90,25 +90,22 @@ recipe_list(Owner) ->
     [Header|HTML].
 
 
-get_recipe_from_post() ->
-
-   { ok,Owner} = mrb_facebook:get_session_user_id(),
-  
+get_recipe_from_post(Owner) ->
     Name       = ?GET(recipe_name), 
     Ingre      = ?GET(ingredients),
     Direc      = ?GET(directions),
     {ok, Res}  = mrb_util:make_recipe(Owner, Name, Ingre, Direc),
+    lager:info("Recipe ~p", [Res]),
     {ok, Res}.
 
 
 event(submit) ->
-
-    {ok,Recipe} = get_recipe_from_post(),
+    {ok,UserId} = mrb_facebook:get_session_user_id(),
+    {ok,Recipe} = get_recipe_from_post(UserId),
     ok          = mrb_util:add_recipe(Recipe),
-
-    wf:replace(button,
+    wf:replace(recipe_table,
                #panel { 
-%                  body    = submit, 
+                  body    =  recipe_list(UserId), 
                   actions = #effect { effect=highlight }
                  });
 event(Evt) ->

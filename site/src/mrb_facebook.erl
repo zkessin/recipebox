@@ -26,7 +26,6 @@ save_user(User) when is_record(User, user)->
     
 -spec(lookup_user_by_id(user_id()) -> maybe(user_rec())).
 lookup_user_by_id({user_id,_} = UserID) ->
-    
     case mnesia:dirty_match_object(user,#user{user_id=UserID, _='_'}) of
         [User] ->
             {ok, User};
