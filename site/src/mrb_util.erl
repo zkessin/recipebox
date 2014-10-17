@@ -59,9 +59,9 @@ delete_recipe({recipe_id, _} = RecipeID) ->
 recipe_header() ->
     #tablerow{'class' = "recipe",
           cells = [ 
-                    #tableheader{text = "Name"},
-                    #tableheader{text = "Ingredients"},
-                    #tableheader{text = "Directions"}
+                    #tableheader{text = "Name"}
+%                    #tableheader{text = "Ingredients"},
+%                    #tableheader{text = "Directions"}
                  ]}.
 
 -spec(format_recipe(#recipe{}) -> nitrogen_element()).
@@ -70,12 +70,18 @@ format_recipe(#recipe{id          = {recipe_id,   _ID},
                       name        = {recipe_name, Name},
                       ingredients = {ingredients, Ingre},
                       directions  = {directions,  Direc}}) ->
-%    RecipeURL = ["recipe/",ID],
+%    RecipeURL = ["recipe/",ID  
+
+    Event = #event{ target=recipe_form, type=click },
+
     #tablerow{'class' = "recipe",
           cells = [ 
-                    #tablecell{text = Name},
-                    #tablecell{text = Ingre},
-                    #tablecell{text = Direc}
+                    #tablecell{text = Name,
+                               actions=Event#event { 
+                                         actions=#show{}  
+                                        }}
+%                    #tablecell{text = Ingre},
+%                    #tablecell{text = Direc}
                  ]}.
 
 -spec(get_recipe_by_id(recipe_id()) ->
