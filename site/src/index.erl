@@ -52,6 +52,7 @@ inner_body(UserID) ->
      #h1 { text="My Recipe Box" },
      #p{},
      #restful_form{
+        id      = recipe_form,
         method  = post,
         enctype = "application/json",
         body    = [
@@ -103,6 +104,7 @@ event(submit) ->
     {ok,UserId} = mrb_facebook:get_session_user_id(),
     {ok,Recipe} = get_recipe_from_post(UserId),
     ok          = mrb_util:add_recipe(Recipe),
+    wf:wire(recipe_form, #hide{}),
     wf:replace(recipe_list,
                #panel { 
                   body    =  recipe_list(UserId), 
