@@ -1,7 +1,9 @@
 %% Include the automatically generated plugins directory
 -include("plugins.hrl").
 -include_lib("nitrogen_core/include/wf.hrl").
-
+-compile([{parse_transform, lager_transform}]).
+%%
+%%
 %% Include any application-specific custom elements, actions, or validators below
 %% basic types (with tags for pattern matching)
 -type(maybe(X)         :: {ok, X}| not_found). 

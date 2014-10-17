@@ -65,8 +65,8 @@ recipe_header() ->
                  ]}.
 
 -spec(format_recipe(#recipe{}) -> nitrogen_element()).
-format_recipe(#recipe{id          = {recipe_id,   ID},
-                      owner       = {user_id,    _Owner},
+format_recipe(#recipe{id          = {recipe_id,   _ID},
+                      owner       = {user_id,     _Owner},
                       name        = {recipe_name, Name},
                       ingredients = {ingredients, Ingre},
                       directions  = {directions,  Direc}}) ->

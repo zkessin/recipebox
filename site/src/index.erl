@@ -1,6 +1,7 @@
 %% -*- mode: nitrogen -*-
 -module (index).
 -compile(export_all).
+
 -include("records.hrl").
 -include_lib("nitrogen_core/include/wf.hrl").
 
@@ -8,23 +9,45 @@ main() -> #template { file="./site/templates/bare.html" }.
 
 title() -> "My RecipeBox".
 
+
+
 body() ->
     mrb_facebook:facebook_postback(),
+    SessionId =  mrb_facebook:get_session_user_id(),
+
+    make_body(SessionId).
+
+make_body({ok, UserID}) ->
+    lager:info("Session ID ~p~n", [UserID]),
     #container_12 { body=[
 
                           #table{
                              id     = recipe_table,
-                             rows   = recipe_list()
+                             rows   = recipe_list(UserID)
                             },
                           #grid_6 {
                              alpha  = true, 
                              prefix = 2, 
                              suffix = 2, 
                              omega  = true, 
-                             body   = inner_body() }
-                         ]}.
+                             body   = inner_body(UserID) }
+                         ]};
+make_body(not_found) ->
+    #container_12{body = [
+                    #grid_6{
+                             alpha  = true, 
+                             prefix = 2, 
+                             suffix = 2, 
+                             omega  = true, 
+                             body   = signon_body() }
+                    
 
-inner_body() -> 
+                   ]}.
+
+signon_body() ->
+    [#h1{ text = "Signin with facebook"}].
+
+inner_body(UserID) -> 
     [
      #h1 { text="My Recipe Box" },
      #p{},
@@ -60,16 +83,11 @@ inner_body() ->
     ].
 
 
-recipe_list() ->
-    case  mrb_facebook:get_session_user_id() of
-        {ok, Owner} ->
-            Header  = mrb_util:recipe_header(),
-            Recipes = mrb_util:list_recipes_by_user(Owner),
-            HTML    = [mrb_util:format_recipe(R) || R <- Recipes],
-            [Header|HTML];
-        not_found ->
-            []
-    end.
+recipe_list(Owner) ->
+    Header  = mrb_util:recipe_header(),
+    Recipes = mrb_util:list_recipes_by_user(Owner),
+    HTML    = [mrb_util:format_recipe(R) || R <- Recipes],
+    [Header|HTML].
 
 
 get_recipe_from_post() ->
